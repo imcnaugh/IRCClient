@@ -1,17 +1,20 @@
 package com.mcnaughty.irc;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.channels.Channel;
 
 public class IRCConnection {
 
 	private String host;
 	private int port;
 
-	private PrintStream output;
+	private BufferedWriter output;
+	private BufferedReader input;
 
 	public IRCConnection(String host) throws UnknownHostException, IOException {
 		this(host, 6667);
@@ -28,19 +31,28 @@ public class IRCConnection {
 
 	private void connect() throws UnknownHostException, IOException {
 		Socket connection = new Socket(host, port);
-		output = new PrintStream(connection.getOutputStream());
+		output = new BufferedWriter(new OutputStreamWriter(
+				connection.getOutputStream()));
+		input = new BufferedReader(new InputStreamReader(
+				connection.getInputStream()));
+		
+		System.out.println("Connection established (with " + connection.getRemoteSocketAddress() + ")");
+		
 	}
 
-	private void register() {
-		String nickname = "ircbottest202";
-		String localhost = "localhost";
-		output.println("USER" + " " + nickname + " " + localhost + " " + host
-				+ " " + nickname);
-		output.println("NICK" + " " + nickname);
+	private void register() throws IOException {
+		String nickname = "irctestb4";
+		output.write("USER " + nickname + " tolmoon tolsun :hi\n");
+		output.flush();
+		output.write("NICK" + " " + nickname + "\n");
+		output.flush();
 	}
 
-	public Channel getChannel(String name) {
-		return (new Channel(name, output));
+	public Channel getChannel(String name) throws IOException {
+		return (new Channel(name, output, input));
 	}
-
+	
+	public BufferedReader getBufferedReader(){
+		return input;
+	}
 }
