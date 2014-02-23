@@ -42,7 +42,7 @@ public class IRCConnection {
 
 	private void register() throws IOException {
 		String nickname = "irctestb4";
-		output.write("USER " + nickname + " tolmoon tolsun :hi\n");
+		output.write("USER " + nickname + " * 8 me :hi\n");
 		output.flush();
 		output.write("NICK" + " " + nickname + "\n");
 		output.flush();

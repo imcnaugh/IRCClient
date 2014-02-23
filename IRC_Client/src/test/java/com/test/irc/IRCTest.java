@@ -16,12 +16,13 @@ public class IRCTest {
 	public void TestConnection() {
 
 		try {
-			IRCConnection connection = new IRCConnection("irc.freenode.com", 6666);
+			IRCConnection connection = new IRCConnection("irc.freenode.com",
+					6666);
 			Channel ircTestChannle = connection.getChannel("ircbottest");
 			ircTestChannle.println("this is a test");
 			while (true) {
 				String text = connection.getBufferedReader().readLine();
-				if(text != null){
+				if (text != null) {
 					System.out.println(text);
 				}
 			}
