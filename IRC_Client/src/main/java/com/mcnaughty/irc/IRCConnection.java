@@ -10,49 +10,59 @@ import java.net.UnknownHostException;
 
 public class IRCConnection {
 
-	private String host;
-	private int port;
+	private static final int defalutPort = 6666;
+
+	private final String hostsName = "localhost";
+	private final String servcieName = "McNaughtyIRC";
+
+	private final String host;
+	private final int port;
+	private String nick;
 
 	private BufferedWriter output;
 	private BufferedReader input;
 
 	public IRCConnection(String host) throws UnknownHostException, IOException {
-		this(host, 6667);
+		this(host, defalutPort, Util.generateRandomNick());
 	}
 
-	public IRCConnection(String host, int port) throws UnknownHostException,
+	public IRCConnection(String host, int port) throws UnknownHostException, IOException {
+		this(host, port, Util.generateRandomNick());
+	}
+
+	public IRCConnection(String host, String nick) throws UnknownHostException,
 			IOException {
+		this(host, defalutPort, nick);
+	}
+
+	public IRCConnection(String host, int port, String nick)
+			throws UnknownHostException, IOException {
 		this.host = host;
 		this.port = port;
+		this.nick = nick;
 
 		connect();
 		register();
 	}
 
+	public Channel getChannel(String name) throws IOException {
+		return (new Channel(name, output, input));
+	}
+
+	
 	private void connect() throws UnknownHostException, IOException {
 		Socket connection = new Socket(host, port);
 		output = new BufferedWriter(new OutputStreamWriter(
 				connection.getOutputStream()));
 		input = new BufferedReader(new InputStreamReader(
 				connection.getInputStream()));
-		
-		System.out.println("Connection established (with " + connection.getRemoteSocketAddress() + ")");
-		
 	}
 
 	private void register() throws IOException {
-		String nickname = "irctestb4";
-		output.write("USER " + nickname + " * 8 me :hi\n");
+		output.write("USER " + nick + " " + hostsName + "  " + servcieName
+				+ " " + ":" + nick + "\n");
 		output.flush();
-		output.write("NICK" + " " + nickname + "\n");
+		output.write("NICK" + " " + nick + "\n");
 		output.flush();
-	}
-
-	public Channel getChannel(String name) throws IOException {
-		return (new Channel(name, output, input));
-	}
-	
-	public BufferedReader getBufferedReader(){
-		return input;
 	}
 }
