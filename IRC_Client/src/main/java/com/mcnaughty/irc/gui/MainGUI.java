@@ -6,14 +6,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import com.mcnaughty.irc.Channel;
+import com.mcnaughty.irc.IRCConnection;
+
 public class MainGUI {
+	
+	private final IRCConnection ircConnection;
+	private final Channel ircChannel;
 
 	private JFrame mainFrame = new JFrame("IRC client - proof of concept");
 
@@ -21,17 +30,33 @@ public class MainGUI {
 	private JPanel southPanel = new JPanel(new FlowLayout());
 
 	private JTextArea ircOutputArea = new JTextArea(30, 50);
+	private JScrollPane scrollPane = new JScrollPane(ircOutputArea);
 
 	private JTextField inputField = new JTextField(50);
 	private JButton sendBut = new JButton(" Send ");
 
-	public MainGUI() {
+	public MainGUI(IRCConnection ircConnection, Channel ircChannel) {
 		configureGuiComponets();
 		addFieldsToSouthPanel();
 		addFieldsToMainPanel();
 		addFieldsToMainFrame();
 		addActionListeners();
 		displayMainFrame();
+		
+		this.ircConnection = ircConnection;
+		this.ircChannel = ircChannel;
+		BufferedReader input = ircConnection.getBufferedReader();
+		String incomingText = "";
+		while(true){
+			try {
+				incomingText = input.readLine();
+				if(incomingText != null && !incomingText.equals("")){
+					ircOutputArea.append(incomingText + "\n");
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void displayMainFrame() {
@@ -76,7 +101,7 @@ public class MainGUI {
 	}
 
 	private void addFieldsToMainPanel() {
-		mainPanel.add(ircOutputArea, BorderLayout.CENTER);
+		mainPanel.add(scrollPane, BorderLayout.CENTER);
 		mainPanel.add(southPanel, BorderLayout.SOUTH);
 	}
 
@@ -87,18 +112,20 @@ public class MainGUI {
 
 	private void configureGuiComponets() {
 		ircOutputArea.setEditable(false);
+		ircOutputArea.setAutoscrolls(true);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	private void sendTextInInputField() {
 		String text = inputField.getText();
 		if (!text.equals("")) {
-			ircOutputArea.append(text + "\n");
+			try {
+				ircChannel.println(text);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			inputField.setText("");
 		}
-	}
-
-	public static void main(String[] args) {
-		new MainGUI();
 	}
 }

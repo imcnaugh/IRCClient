@@ -50,6 +50,10 @@ public class IRCConnection {
 	public Channel getChannel(String name) throws IOException {
 		return (new Channel(name, output, input));
 	}
+	
+	public BufferedReader getBufferedReader(){
+		return input;
+	}
 
 	
 	private void connect() throws UnknownHostException, IOException {
