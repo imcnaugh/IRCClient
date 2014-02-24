@@ -1,4 +1,4 @@
-package com.mcnaughty.irc;
+package com.mcnaughty.irc.util;
 
 public class Util {
 

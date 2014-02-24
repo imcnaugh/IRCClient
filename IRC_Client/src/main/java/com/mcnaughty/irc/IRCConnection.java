@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import com.mcnaughty.irc.util.Util;
+
 public class IRCConnection {
 
 	private static final int defalutPort = 6666;

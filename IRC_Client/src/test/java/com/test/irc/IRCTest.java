@@ -21,6 +21,9 @@ public class IRCTest {
 			Channel ircTestChannle = connection.getChannel("ircbottest");
 			ircTestChannle.println("this is a test");
 			while (true) {
+				String text = connection.getBufferedReader().readLine();
+				if(text != null)
+					System.out.println(text);
 			}
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block

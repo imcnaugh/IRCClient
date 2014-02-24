@@ -5,7 +5,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class Channel {
-	private String name;
+	private final String name;
 	private BufferedWriter output;
 	private BufferedReader input;
 
@@ -21,5 +21,9 @@ public class Channel {
 	public void println(String message) throws IOException {
 		output.write("PRIVMSG #" + name + " " + ":" + message + "\n");
 		output.flush();
+	}
+	
+	public void partChannel(){
+		
 	}
 }
